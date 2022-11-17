@@ -42,11 +42,11 @@ pub async fn update_task(task: Task) -> reqwest::Result<Task> {
         .await
 }
 
-pub async fn get_incomplete_task(pool: Pool) -> Task {
+pub async fn get_incomplete_task(pool: Pool) -> Option<Task> {
     let result = execute(&pool, Queries::GetIncompleteTask).await;
 
     match result {
-        Ok(task) => task,
+        Ok(task) => Some(task),
         Err(_) => {
             let completed_and_latest_task_result =
                 execute(&pool, Queries::GetCompletedAndLatestTask).await;
@@ -61,9 +61,9 @@ pub async fn get_incomplete_task(pool: Pool) -> Task {
                                 .await
                                 .unwrap();
 
-                            task
+                            Some(task)
                         }
-                        Err(_) => panic!("No task found"),
+                        Err(_) => None,
                     }
                 }
                 Err(_) => {
@@ -75,9 +75,9 @@ pub async fn get_incomplete_task(pool: Pool) -> Task {
                                 .await
                                 .unwrap();
 
-                            task
+                            Some(task)
                         }
-                        Err(_) => panic!("No task found"),
+                        Err(_) => None,
                     }
                 }
             }

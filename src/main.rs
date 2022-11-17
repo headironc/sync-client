@@ -8,7 +8,7 @@ async fn main() {
     let sqlite_manager = SqliteConnectionManager::file(current_dir.join("job-queue.db"));
     let sqlite_pool = sqlite::Pool::new(sqlite_manager).unwrap();
 
-    let mut interval = tokio::time::interval(std::time::Duration::from_secs(1));
+    let mut interval = tokio::time::interval(std::time::Duration::from_secs(10));
     loop {
         interval.tick().await;
         let task = task::get_incomplete_task(sqlite_pool.clone()).await;
